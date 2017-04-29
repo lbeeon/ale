@@ -541,20 +541,21 @@ function! s:RunJob(options) abort
             let l:job += 1
         endwhile
     elseif has('nvim')
+        let l:exec = 'cd '. getcwd() . ' &&' . l:command 
         if l:output_stream ==# 'stderr'
             " Read from stderr instead of stdout.
-            let l:job = jobstart(l:command, {
+            let l:job = jobstart(['bash', &shellcmdflag, l:exec], {
             \   'on_stderr': function('s:GatherOutputNeoVim'),
             \   'on_exit': function('s:HandleExitNeoVim'),
             \})
         elseif l:output_stream ==# 'both'
-            let l:job = jobstart(l:command, {
+            let l:job = jobstart(['bash', &shellcmdflag, l:exec], {
             \   'on_stdout': function('s:GatherOutputNeoVim'),
             \   'on_stderr': function('s:GatherOutputNeoVim'),
             \   'on_exit': function('s:HandleExitNeoVim'),
             \})
         else
-            let l:job = jobstart(l:command, {
+            let l:job = jobstart(['bash', &shellcmdflag, l:exec], {
             \   'on_stdout': function('s:GatherOutputNeoVim'),
             \   'on_exit': function('s:HandleExitNeoVim'),
             \})
